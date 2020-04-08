@@ -2,7 +2,7 @@ name: flutter_esc_printer
 description: cc
 version: 0.0.1
 author: ke chankrisna
-homepage:
+homepage: https://mylekha.app
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
