@@ -1,7 +1,6 @@
 name: flutter_esc_printer
-description: cc
+description: This package is used to print ticket on flutter application, it can print on both android and ios vai network and printer.
 version: 0.0.1
-author: ke chankrisna
 homepage: https://mylekha.app
 
 environment:
