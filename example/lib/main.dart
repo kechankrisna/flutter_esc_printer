@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     }else if(address.isMacAddress) {
       //print vai mac address
       _printerBluetoothManager.selectPrinter(address);
-      final res = await _printerNetworkManager.printTicket(await testTicket(paper));
+      final res = await _printerBluetoothManager.printTicket(await testTicket(paper));
     
     }else{
       //print("Error :e");
