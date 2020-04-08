@@ -19,7 +19,8 @@ dev_dependencies:
 
   flutter_esc_printer:
     path: ../
-
+  
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

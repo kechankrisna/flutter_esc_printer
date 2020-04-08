@@ -1,17 +1,18 @@
 name: flutter_esc_printer
-description: Flutter ESC Printer originally inpire from esc_pos_utils, flutter_bluetooth_serial.
+description: cc
 version: 0.0.1
-author:
+author: ke chankrisna
 homepage:
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   esc_pos_utils: ^0.3.6
-  flutter_bluetooth_serial: ^0.2.2   
+  flutter_bluetooth_serial: ^0.2.2
+     
 
 dev_dependencies:
   flutter_test:

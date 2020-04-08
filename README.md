@@ -1,6 +1,6 @@
 # flutter_esc_printer
 
-A new flutter plugin project.
+Flutter ESC Printer originally inpire from esc_pos_utils flutter_bluetooth_serial.
 
 ## Getting Started
 
