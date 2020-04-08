@@ -26,7 +26,8 @@ class PrinterBluetoothManager {
     _port = port;
   }
 
-  Future<PosPrintResult> printTicket(Ticket ticket,{int chunkSizeBytes = 50, int queueSleepTimeMs = 1}) async {
+  Future<PosPrintResult> printTicket(Ticket ticket,
+      {int chunkSizeBytes = 50, int queueSleepTimeMs = 1}) async {
     if (_host == null || _port == null) {
       return Future<PosPrintResult>.value(PosPrintResult.printerNotSelected);
     } else if (ticket == null || ticket.bytes.isEmpty) {
@@ -40,9 +41,9 @@ class PrinterBluetoothManager {
     final len = ticket.bytes.length;
 
     //check if total length is lower than chunkSize
-    if(ticket.bytes.length <= chunkSizeBytes){
-      chunks.add( ticket.bytes );
-    }else{
+    if (ticket.bytes.length <= chunkSizeBytes) {
+      chunks.add(ticket.bytes);
+    } else {
       for (var i = 0; i < len; i += chunkSizeBytes) {
         final end = (i + chunkSizeBytes < len) ? i + chunkSizeBytes : len;
         chunks.add(ticket.bytes.sublist(i, end));
@@ -50,9 +51,12 @@ class PrinterBluetoothManager {
     }
 
     // print("splited into chunks completed");
-    _timeout = Duration(milliseconds: (chunks.length * queueSleepTimeMs) + 1000);  //5000 is more delay to avoid error
+    _timeout = Duration(
+        milliseconds: (chunks.length * queueSleepTimeMs) +
+            1000); //5000 is more delay to avoid error
     try {
-      final BluetoothConnection connection = await BluetoothConnection.toAddress(_host);
+      final BluetoothConnection connection =
+          await BluetoothConnection.toAddress(_host);
       print('Connected to the device');
       if (connection.isConnected) {
         print("connection is connected");
@@ -61,7 +65,7 @@ class PrinterBluetoothManager {
           await connection.output.allSent;
           sleep(Duration(milliseconds: queueSleepTimeMs));
         }
-        
+
         // print('size ${ticket.bytes.length}');
         Future.delayed(_timeout).then((value) => connection.close());
       }

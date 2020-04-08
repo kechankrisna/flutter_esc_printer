@@ -1,4 +1,5 @@
 library flutter_esc_printer;
+
 export './src/service.dart';
 export './src/validate.dart';
 export './src/enums.dart';
