@@ -27,7 +27,9 @@ class PrinterBluetoothManager {
   }
 
   Future<PosPrintResult> printTicket(Ticket ticket,
-      {int chunkSizeBytes = 50, int queueSleepTimeMs = 1}) async {
+      {int chunkSizeBytes = 50,
+      int queueSleepTimeMs = 1,
+      bool seperated: true}) async {
     if (_host == null || _port == null) {
       return Future<PosPrintResult>.value(PosPrintResult.printerNotSelected);
     } else if (ticket == null || ticket.bytes.isEmpty) {
@@ -35,45 +37,69 @@ class PrinterBluetoothManager {
     }
     //print code
     // print(Uint8List.fromList(ticket.bytes));
-
     final List<List<int>> chunks = [];
-
     final len = ticket.bytes.length;
-
-    //check if total length is lower than chunkSize
-    if (ticket.bytes.length <= chunkSizeBytes) {
-      chunks.add(ticket.bytes);
-    } else {
-      for (var i = 0; i < len; i += chunkSizeBytes) {
-        final end = (i + chunkSizeBytes < len) ? i + chunkSizeBytes : len;
-        chunks.add(ticket.bytes.sublist(i, end));
+    if (seperated) {
+      //check if total length is lower than chunkSize
+      if (ticket.bytes.length <= chunkSizeBytes) {
+        chunks.add(ticket.bytes);
+      } else {
+        for (var i = 0; i < len; i += chunkSizeBytes) {
+          final end = (i + chunkSizeBytes < len) ? i + chunkSizeBytes : len;
+          chunks.add(ticket.bytes.sublist(i, end));
+        }
       }
-    }
 
-    // print("splited into chunks completed");
-    _timeout = Duration(
-        milliseconds: (chunks.length * queueSleepTimeMs) +
-            1000); //5000 is more delay to avoid error
-    try {
-      final BluetoothConnection connection =
-          await BluetoothConnection.toAddress(_host);
-      print('Connected to the device');
-      if (connection.isConnected) {
-        print("connection is connected");
-        for (List<int> data in chunks) {
-          connection.output.add(Uint8List.fromList(data));
-          await connection.output.allSent;
-          sleep(Duration(milliseconds: queueSleepTimeMs));
+      // print("splited into chunks completed");
+      _timeout = Duration(
+          milliseconds: (chunks.length * queueSleepTimeMs) +
+              1000); //5000 is more delay to avoid error
+      try {
+        final BluetoothConnection connection =
+            await BluetoothConnection.toAddress(_host);
+        print('Connected to the device');
+        if (connection.isConnected) {
+          print("connection is connected");
+          for (List<int> data in chunks) {
+            connection.output.add(Uint8List.fromList(data));
+            await connection.output.allSent;
+            sleep(Duration(milliseconds: queueSleepTimeMs));
+          }
+
+          // print('size ${ticket.bytes.length}');
+          Future.delayed(_timeout).then((value) => connection.close());
         }
 
-        // print('size ${ticket.bytes.length}');
-        Future.delayed(_timeout).then((value) => connection.close());
+        return Future<PosPrintResult>.value(PosPrintResult.success);
+      } catch (e) {
+        print('Error: $e');
+        return Future<PosPrintResult>.value(PosPrintResult.timeout);
       }
+    } else {
+      try {
+        // print("splited into chunks completed");
+        _timeout = Duration(
+            milliseconds: (chunks.length * queueSleepTimeMs) +
+                5000); //5000 is more delay to avoid error
+        final BluetoothConnection connection =
+            await BluetoothConnection.toAddress(_host);
+        // print('Connected to the device');
+        if (!connection.isConnected)
+          return Future<PosPrintResult>.value(
+              PosPrintResult.printerNotSelected);
+        print("connection is connected");
 
-      return Future<PosPrintResult>.value(PosPrintResult.success);
-    } catch (e) {
-      print('Error: $e');
-      return Future<PosPrintResult>.value(PosPrintResult.timeout);
+        connection.output.add(Uint8List.fromList(ticket.bytes));
+        await connection.output.allSent;
+        await Future.delayed(_timeout)
+            .then((t) => true)
+            .catchError((e) => false);
+        connection.close();
+        return Future<PosPrintResult>.value(PosPrintResult.success);
+      } catch (e) {
+        print('Error: $e');
+        return Future<PosPrintResult>.value(PosPrintResult.timeout);
+      }
     }
   }
 }
