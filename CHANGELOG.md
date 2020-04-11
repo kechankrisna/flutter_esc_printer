@@ -1,3 +1,7 @@
+## 0.1.0
+
+* TODO: add license and add seperate into bluetooth printer to avoid chunks
+
 ## 0.0.1
 
 * TODO: Describe initial release.
