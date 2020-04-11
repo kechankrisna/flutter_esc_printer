@@ -53,7 +53,7 @@ class PrinterBluetoothManager {
       // print("splited into chunks completed");
       _timeout = Duration(
           milliseconds: (chunks.length * queueSleepTimeMs) +
-              1000); //5000 is more delay to avoid error
+              5000); //5000 is more delay to avoid error
       try {
         final BluetoothConnection connection =
             await BluetoothConnection.toAddress(_host);
