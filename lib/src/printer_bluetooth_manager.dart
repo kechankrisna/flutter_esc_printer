@@ -57,19 +57,35 @@ class PrinterBluetoothManager {
       try {
         final BluetoothConnection connection =
             await BluetoothConnection.toAddress(_host);
-        print('Connected to the device');
-        if (connection.isConnected) {
-          print("connection is connected");
-          for (List<int> data in chunks) {
-            connection.output.add(Uint8List.fromList(data));
-            await connection.output.allSent;
-            sleep(Duration(milliseconds: queueSleepTimeMs));
-          }
 
-          // print('size ${ticket.bytes.length}');
-          Future.delayed(_timeout).then((value) => connection.close());
-        }
+        if (!connection.isConnected)
+          return Future<PosPrintResult>.value(
+              PosPrintResult.printerNotSelected);
+        print("connection is connected");
+        // for (List<int> data in chunks) {
+        //   connection.output.add(Uint8List.fromList(data));
+        //   await connection.output.allSent;
+        //   sleep(Duration(milliseconds: queueSleepTimeMs));
+        // }
+        var result = await Future.forEach(chunks, (List<int> data) async {
+          connection.output.add(Uint8List.fromList(data));
+          await connection.output.allSent;
+          // sleep(Duration(milliseconds: queueSleepTimeMs));
+          return true;
+        }).then((v) {
+          return true;
+        }).catchError((e) {
+          print("Error: $e");
+          return false;
+        });
+        print("Result is $result");
 
+        // connection.output.add(Uint8List.fromList(ticket.bytes));
+        // await connection.output.allSent;
+        await Future.delayed(_timeout)
+            .then((t) => true)
+            .catchError((e) => false);
+        connection.close();
         return Future<PosPrintResult>.value(PosPrintResult.success);
       } catch (e) {
         print('Error: $e');
