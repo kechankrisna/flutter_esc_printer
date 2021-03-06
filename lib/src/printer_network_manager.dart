@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:esc_pos_utils/esc_pos_utils.dart';
 import './enums.dart';
 import 'dart:async';
 
@@ -22,11 +21,13 @@ class PrinterNetworkManager {
     _port = port;
   }
 
-  Future<PosPrintResult> printTicket(Ticket ticket,
-      {int chunkSizeBytes = 50, int queueSleepTimeMs = 1}) async {
+  Future<PosPrintResult> printTicket(
+      {List<int> bytes: const [],
+      int chunkSizeBytes = 50,
+      int queueSleepTimeMs = 1}) async {
     if (_host == null || _port == null) {
       return Future<PosPrintResult>.value(PosPrintResult.printerNotSelected);
-    } else if (ticket == null || ticket.bytes.isEmpty) {
+    } else if (bytes.isEmpty) {
       return Future<PosPrintResult>.value(PosPrintResult.ticketEmpty);
     }
     //print code
@@ -34,15 +35,15 @@ class PrinterNetworkManager {
 
     final List<List<int>> chunks = [];
 
-    final len = ticket.bytes.length;
+    final len = bytes.length;
 
     //check if total length is lower than chunkSize
-    if (ticket.bytes.length <= chunkSizeBytes) {
-      chunks.add(ticket.bytes);
+    if (bytes.length <= chunkSizeBytes) {
+      chunks.add(bytes);
     } else {
       for (var i = 0; i < len; i += chunkSizeBytes) {
         final end = (i + chunkSizeBytes < len) ? i + chunkSizeBytes : len;
-        chunks.add(ticket.bytes.sublist(i, end));
+        chunks.add(bytes.sublist(i, end));
       }
     }
     // print("splited into chunks completed");

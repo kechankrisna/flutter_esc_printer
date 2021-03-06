@@ -1,3 +1,5 @@
+## 1.0.0
+- nullable implemented
 
 ## 0.1.1
 

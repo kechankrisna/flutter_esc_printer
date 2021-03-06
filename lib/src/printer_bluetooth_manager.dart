@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import './enums.dart';
 
@@ -26,27 +24,27 @@ class PrinterBluetoothManager {
     _port = port;
   }
 
-  Future<PosPrintResult> printTicket(Ticket ticket,
-      {int chunkSizeBytes = 50,
+  Future<PosPrintResult> printTicket(
+      {List<int> bytes : const [], int chunkSizeBytes = 50,
       int queueSleepTimeMs = 1,
       bool seperated: true}) async {
     if (_host == null || _port == null) {
       return Future<PosPrintResult>.value(PosPrintResult.printerNotSelected);
-    } else if (ticket == null || ticket.bytes.isEmpty) {
+    } else if (bytes.isEmpty) {
       return Future<PosPrintResult>.value(PosPrintResult.ticketEmpty);
     }
     //print code
-    // print(Uint8List.fromList(ticket.bytes));
+    // print(Uint8List.fromList(bytes));
     final List<List<int>> chunks = [];
-    final len = ticket.bytes.length;
+    final len = bytes.length;
     if (seperated) {
       //check if total length is lower than chunkSize
-      if (ticket.bytes.length <= chunkSizeBytes) {
-        chunks.add(ticket.bytes);
+      if (bytes.length <= chunkSizeBytes) {
+        chunks.add(bytes);
       } else {
         for (var i = 0; i < len; i += chunkSizeBytes) {
           final end = (i + chunkSizeBytes < len) ? i + chunkSizeBytes : len;
-          chunks.add(ticket.bytes.sublist(i, end));
+          chunks.add(bytes.sublist(i, end));
         }
       }
 
@@ -105,7 +103,7 @@ class PrinterBluetoothManager {
               PosPrintResult.printerNotSelected);
         print("connection is connected");
 
-        connection.output.add(Uint8List.fromList(ticket.bytes));
+        connection.output.add(Uint8List.fromList(bytes));
         await connection.output.allSent;
         await Future.delayed(_timeout)
             .then((t) => true)

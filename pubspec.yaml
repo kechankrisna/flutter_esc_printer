@@ -1,6 +1,6 @@
 name: flutter_esc_printer
 description: This package is used to print ticket on flutter application, it can print on both android and ios vai network and printer.
-version: 0.1.0
+version: 1.0.0
 homepage: https://github.com/kechankrisna/flutter_esc_printer
 
 environment:
@@ -9,8 +9,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  esc_pos_utils: ^0.3.6
-  flutter_bluetooth_serial: ^0.2.2
+  esc_pos_utils: 
+    git:
+      url: https://github.com/kechankrisna/esc_pos_utils.git
+      ref: nullable
+  flutter_bluetooth_serial: 
+    git:
+      url: https://github.com/kechankrisna/flutter_bluetooth_serial.git
+      ref: nullable
      
 
 dev_dependencies:
