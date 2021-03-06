@@ -1,5 +1,6 @@
 ## 1.0.0
 - nullable implemented
+- check from print ticket to print list<in> bytes
 
 ## 0.1.1
 
